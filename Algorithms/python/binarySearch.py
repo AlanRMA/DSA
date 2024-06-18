@@ -1,9 +1,9 @@
-# Implementacão Imperativa
+# Implementacão Recursiva
 def RecBinarySearch(li,target):
     def helper(li,min_index,max_index,target):
         if min_index > max_index:
             return False  
-        mid = (min_index + max_index) // 2  # Calculate midpoint index once
+        mid = (min_index + max_index) // 2  
 
         if li[mid] == target:
             return True
