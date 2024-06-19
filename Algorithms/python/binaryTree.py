@@ -1,46 +1,95 @@
-class Node():
-    """
-    Um nó armazena um valor apenas.
-
-    """
-    def __init__(self,value : int):
-        self.value = value
-class Tree():
-    def __init__(self,val,left = None,right = None):
-        self.root = Node(val).value
-        self.left = left
-        self.right = right
-    def addLeft(self,value):
-        if self.left is None: # se sim, pode adicionar!
-            self.left = Tree(value)
-        else:
-            print("Nó Left está ocupado!")
-    def addRight(self, value):
-        if self.right is None:
-            self.right = Tree(value)
-        else:
-            print("Nó Right está ocupado!")
-    def removeLeft(self):
-        if self.left is not None:
+class BinaryTree():
+    class Node():
+        def __init__(self, value):
+            self.value = value
             self.left = None
-    def removeRight(self):
-        if self.right is not None:
             self.right = None
-    def showTree(self, depth=0, prefix=''):
-        if self.right is not None:
-            self.right.showTree(depth + 1, prefix + 'r:')
-        print(' ' * 4 * depth + prefix + str(self.root))
-        if self.left is not None:
-            self.left.showTree(depth + 1, prefix + 'l:')
 
-# - - - - - - - 
+    def __init__(self, value=None):
+        self.root = self.Node(value) if value else None
 
-arvore = Tree(1)
-arvore.addLeft(2)
-arvore.addRight(3)
-arvore.left.addLeft(4)
-arvore.left.addRight(5)
-arvore.right.addLeft(6)
-arvore.right.addRight(7)
+    def add(self, value):
+        if self.root is None:
+            self.root = self.Node(value)
+        else:
+            self._add(value, self.root)
 
-print(arvore.right.showTree())
+    def _add(self, value, node):
+        if value < node.value:
+            if node.left is None:
+                node.left = self.Node(value)
+            else:
+                self._add(value, node.left)
+        else:
+            if node.right is None:
+                node.right = self.Node(value)
+            else:
+                self._add(value, node.right)
+
+    def search(self, value):
+        return self._search(value, self.root)
+
+    def _search(self, value, node):
+        if node is None:
+            return False
+        elif value == node.value:
+            return True
+        elif value < node.value:
+            return self._search(value, node.left)
+        else:
+            return self._search(value, node.right)
+
+    def delete(self, value):
+        self.root = self._delete(value, self.root)
+
+    def _delete(self, value, node):
+        if node is None:
+            return None
+        elif value < node.value:
+            node.left = self._delete(value, node.left)
+            return node
+        elif value > node.value:
+            node.right = self._delete(value, node.right)
+            return node
+        else:
+            if node.left is None:
+                return node.right
+            elif node.right is None:
+                return node.left
+
+            min_node = self._find_min(node.right)
+            node.value = min_node.value
+            node.right = self._delete(min_node.value, node.right)
+
+            return node
+
+    def _find_min(self, node):
+        while node.left is not None:
+            node = node.left
+        return node
+
+    def print(self):
+        print(self._print(self.root).replace("\n", "\n    "))
+
+    def _print(self, node):
+        if node is None:
+            return ""
+        elif node.left is None and node.right is None:
+            return str(node.value)
+        else:
+            left = self._print(node.left)
+            right = self._print(node.right)
+            return f"({left}\n {node.value} \n{right})"
+
+
+if __name__ == "__main__":
+    tree = BinaryTree()
+    tree.add(4)
+    tree.add(2)
+    tree.add(6)
+    tree.add(1)
+    tree.add(3)
+    tree.add(5)
+    tree.add(7)
+    tree.delete(2)
+    tree.print()
